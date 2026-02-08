@@ -4,6 +4,7 @@ import Gallery from "../../components/Gallery";
 import WhatsAppButton from "../../components/WhatsAppButton";
 import MapEmbed from "../../components/MapEmbed";
 import data from "../../data/listings.json";
+import MapEmbed from "../../components/MapEmbed";
 
 function formatTRY(n) {
   const num = Number(n);
@@ -74,12 +75,18 @@ export default function Detail({ item }) {
             </div>
           </div>
 
-          <div className="card p-6 mt-4">
-            <h2 className="text-lg font-extrabold">Açıklama</h2>
-            <p className="mt-2 whitespace-pre-line text-slate-700">
-              {item.description}
-            </p>
-          </div>
+      <div className="card p-6 mt-4">
+  <h2 className="text-lg font-extrabold">Açıklama</h2>
+
+  <p className="mt-2 whitespace-pre-line text-slate-700">
+    {item.description}
+  </p>
+</div>
+
+<div className="mt-4">
+  <MapEmbed query={item.mapQuery || item.address} />
+</div>
+
 
           <div className="mt-4">
             <MapEmbed query={item.mapQuery || item.address || ""} />
