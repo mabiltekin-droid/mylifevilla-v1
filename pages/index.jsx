@@ -74,37 +74,25 @@ export default function Home() {
   return (
     <Layout>
       <section className="card p-6 overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 badge bg-slate-100 text-slate-800">
-              ✨ Premium • Pendik • Tuzla
-            </div>
-            <h1 className="mt-3 text-2xl md:text-4xl font-extrabold tracking-tight">
-              Hayalindeki evi hızlıca bul
-            </h1>
-            <p className="mt-2 muted">
-              Vitrin + filtre + galeri hazır. Yönetim: <span className="font-semibold text-slate-700">/admin</span>
-            </p>
-
-            <div className="mt-4 flex flex-wrap gap-3">
-              <div className="card px-4 py-3">
-                <div className="text-xs font-extrabold muted">Yayındaki ilan</div>
-                <div className="text-xl font-extrabold">{liveItems.length}</div>
-              </div>
-              <div className="card px-4 py-3">
-                <div className="text-xs font-extrabold muted">Vitrin</div>
-                <div className="text-xl font-extrabold">{featured.length}</div>
-              </div>
-              <a className="btn btn-primary" href="/admin/">İlan ekle</a>
-            </div>
+        <div className="max-w-2xl">
+          <div className="inline-flex items-center gap-2 badge bg-slate-100 text-slate-800">
+            ✨ Premium • Pendik • Tuzla
           </div>
+          <h1 className="mt-3 text-2xl md:text-4xl font-extrabold tracking-tight">
+            Hayalindeki evi hızlıca bul
+          </h1>
+          <p className="mt-2 muted">
+            Filtrele, vitrine bak, ilan detayında galeri + WhatsApp ile hızlı iletişim kur.
+          </p>
 
-          <div className="hidden lg:block">
-            <div className="card p-5 w-[360px]">
-              <div className="text-sm font-extrabold">İpucu</div>
-              <div className="mt-2 muted text-sm">
-                İlan detayı içinde galeri: oklar, swipe, lightbox, sayaç.
-              </div>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <div className="card px-4 py-3">
+              <div className="text-xs font-extrabold muted">Yayındaki ilan</div>
+              <div className="text-xl font-extrabold">{liveItems.length}</div>
+            </div>
+            <div className="card px-4 py-3">
+              <div className="text-xs font-extrabold muted">Vitrin</div>
+              <div className="text-xl font-extrabold">{featured.length}</div>
             </div>
           </div>
         </div>

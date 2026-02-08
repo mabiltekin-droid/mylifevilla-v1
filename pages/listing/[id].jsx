@@ -2,9 +2,10 @@ import { useMemo } from "react";
 import Layout from "../../components/Layout";
 import Gallery from "../../components/Gallery";
 import WhatsAppButton from "../../components/WhatsAppButton";
+import FloatingWhatsApp from "../../components/FloatingWhatsApp";
 import MapEmbed from "../../components/MapEmbed";
+import PropertyCard from "../../components/PropertyCard";
 import data from "../../data/listings.json";
-import MapEmbed from "../../components/MapEmbed";
 
 function formatTRY(n) {
   const num = Number(n);
@@ -26,6 +27,20 @@ export async function getStaticProps({ params }) {
 
 export default function Detail({ item }) {
   const images = useMemo(() => (item?.images || []).filter(Boolean), [item]);
+  const mapQ = item?.mapQuery || item?.address || "";
+  const allLive = useMemo(() => (data.items || []).filter(x => x.status === "Yayinda"), []);
+
+  const similar = useMemo(() => {
+    if (!item) return [];
+    return allLive
+      .filter(x =>
+        x.id !== item.id &&
+        x.district === item.district &&
+        x.type === item.type
+      )
+      .slice(0, 6);
+  }, [allLive, item]);
+
   if (!item) return null;
 
   const badge =
@@ -37,7 +52,6 @@ export default function Detail({ item }) {
     <Layout>
       <div className="mb-4 flex items-center justify-between">
         <a className="btn" href="/">← Geri</a>
-        <a className="btn btn-primary" href="/admin/">Admin</a>
       </div>
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -75,21 +89,11 @@ export default function Detail({ item }) {
             </div>
           </div>
 
-      <div className="card p-6 mt-4">
-  <h2 className="text-lg font-extrabold">Açıklama</h2>
-
-  <p className="mt-2 whitespace-pre-line text-slate-700">
-    {item.description}
-  </p>
-</div>
-
-<div className="mt-4">
-  <MapEmbed query={item.mapQuery || item.address} />
-</div>
-
-
-          <div className="mt-4">
-            <MapEmbed query={item.mapQuery || item.address || ""} />
+          <div className="card p-6 mt-4">
+            <h2 className="text-lg font-extrabold">Açıklama</h2>
+            <p className="mt-2 whitespace-pre-line text-slate-700">
+              {item.description}
+            </p>
           </div>
         </div>
 
@@ -121,12 +125,41 @@ export default function Detail({ item }) {
               </ul>
             </div>
           </div>
-
-          <div className="card p-6 mt-4 text-sm muted">
-            Admin → İlanlar içinde <b>Telefon</b> ve <b>Harita sorgusu</b> alanlarını doldurursan WhatsApp + harita aktif olur.
-          </div>
         </aside>
       </section>
+
+      {/* Harita TAM GENİŞLİK */}
+      {mapQ ? (
+        <section className="mt-4 space-y-3">
+          <MapEmbed query={mapQ} />
+
+          <a
+            className="btn btn-primary w-full text-center"
+            target="_blank"
+            rel="noreferrer"
+            href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapQ)}`}
+          >
+            📍 Yol tarifi al
+          </a>
+        </section>
+      ) : null}
+
+      {/* Benzer ilanlar */}
+      {similar.length ? (
+        <section className="mt-8">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-extrabold">Benzer ilanlar</h2>
+            <div className="text-sm muted">{item.district} • {item.type}</div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {similar.map((x) => <PropertyCard key={x.id} item={x} />)}
+          </div>
+        </section>
+      ) : null}
+
+      {/* Floating WhatsApp */}
+      <FloatingWhatsApp phone={item.phone} title={item.title} />
     </Layout>
   );
 }

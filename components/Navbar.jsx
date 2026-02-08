@@ -1,3 +1,4 @@
+
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-30 border-b hairline bg-white/60 backdrop-blur">
@@ -11,7 +12,6 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2">
           <a className="btn" href="/">İlanlar</a>
-          <a className="btn btn-primary" href="/admin/">Admin</a>
         </div>
       </div>
     </header>
