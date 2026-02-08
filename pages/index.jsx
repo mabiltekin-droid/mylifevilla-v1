@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import Layout from "../components/Layout";
 import FilterBar from "../components/FilterBar";
 import PropertyCard from "../components/PropertyCard";
+import FeaturedCarousel from "../components/FeaturedCarousel";
 import data from "../data/listings.json";
 
 function normalize(s) {
@@ -16,13 +17,23 @@ export default function Home() {
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("featured");
 
+  const liveItems = useMemo(
+    () => (data.items || []).filter((x) => x.status === "Yayinda"),
+    []
+  );
+
+  const featured = useMemo(
+    () => liveItems.filter((x) => x.featured),
+    [liveItems]
+  );
+
   const listings = useMemo(() => {
-    const items = (data.items || []).filter(x => x.status === "Yayinda");
+    const items = liveItems;
     const qn = normalize(q);
     const min = minPrice !== "" ? Number(minPrice) : null;
     const max = maxPrice !== "" ? Number(maxPrice) : null;
 
-    let filtered = items.filter(x => {
+    let filtered = items.filter((x) => {
       if (district !== "ALL" && x.district !== district) return false;
       if (type !== "ALL" && x.type !== type) return false;
 
@@ -49,7 +60,7 @@ export default function Home() {
     });
 
     return filtered;
-  }, [q, district, type, minPrice, maxPrice, sort]);
+  }, [liveItems, q, district, type, minPrice, maxPrice, sort]);
 
   const onReset = () => {
     setQ("");
@@ -59,9 +70,6 @@ export default function Home() {
     setMaxPrice("");
     setSort("featured");
   };
-
-  const liveCount = useMemo(() => (data.items || []).filter(x => x.status === "Yayinda").length, []);
-  const featuredCount = useMemo(() => (data.items || []).filter(x => x.status === "Yayinda" && x.featured).length, []);
 
   return (
     <Layout>
@@ -75,17 +83,17 @@ export default function Home() {
               Hayalindeki evi hızlıca bul
             </h1>
             <p className="mt-2 muted">
-              Filtrele, incele, favori ilanlarını vitrine al. Yönetim: <span className="font-semibold text-slate-700">/admin</span>
+              Vitrin + filtre + galeri hazır. Yönetim: <span className="font-semibold text-slate-700">/admin</span>
             </p>
 
             <div className="mt-4 flex flex-wrap gap-3">
               <div className="card px-4 py-3">
                 <div className="text-xs font-extrabold muted">Yayındaki ilan</div>
-                <div className="text-xl font-extrabold">{liveCount}</div>
+                <div className="text-xl font-extrabold">{liveItems.length}</div>
               </div>
               <div className="card px-4 py-3">
-                <div className="text-xs font-extrabold muted">Öne çıkan</div>
-                <div className="text-xl font-extrabold">{featuredCount}</div>
+                <div className="text-xs font-extrabold muted">Vitrin</div>
+                <div className="text-xl font-extrabold">{featured.length}</div>
               </div>
               <a className="btn btn-primary" href="/admin/">İlan ekle</a>
             </div>
@@ -95,12 +103,14 @@ export default function Home() {
             <div className="card p-5 w-[360px]">
               <div className="text-sm font-extrabold">İpucu</div>
               <div className="mt-2 muted text-sm">
-                Admin panelden ilan ekledikten sonra “Publish” deyince otomatik GitHub commit + Netlify deploy olur.
+                İlan detayı içinde galeri: oklar, swipe, lightbox, sayaç.
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      <FeaturedCarousel items={featured} />
 
       <div className="mt-4">
         <FilterBar
@@ -125,7 +135,7 @@ export default function Home() {
           <div className="card p-10 muted">Sonuç yok. Filtreleri sıfırla.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {listings.map(item => <PropertyCard key={item.id} item={item} />)}
+            {listings.map((item) => <PropertyCard key={item.id} item={item} />)}
           </div>
         )}
       </section>

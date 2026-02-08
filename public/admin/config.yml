@@ -5,39 +5,34 @@ backend:
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
-publish_mode: simple
-
 collections:
   - name: "listings"
-    label: "Ilanlar"
-    format: "json"
-    extension: "json"
+    label: "İlanlar"
     files:
       - file: "data/listings.json"
-        label: "Ilan Listesi"
+        label: "İlan Listesi"
         name: "listings"
         fields:
-          - label: "Ilanlar"
-            name: "items"
-            widget: "list"
-            summary: "{{fields.title}} - {{fields.district}}"
-            fields:
-              - { label: "ID", name: "id", widget: "string" }
-              - { label: "Baslik", name: "title", widget: "string" }
-              - { label: "Fiyat", name: "price", widget: "number", value_type: "int", min: 0 }
-              - { label: "Tur", name: "type", widget: "select", options: ["Satilik", "Kiralik"] }
-              - { label: "Sehir", name: "city", widget: "string", default: "Istanbul" }
-              - { label: "Ilce", name: "district", widget: "select", options: ["Pendik", "Tuzla"] }
-              - { label: "Mahalle", name: "neighborhood", widget: "string", required: false }
-              - { label: "m2", name: "area", widget: "number", value_type: "int", min: 0 }
-              - { label: "Oda", name: "rooms", widget: "string" }
-              - { label: "Bina Yasi", name: "age", widget: "number", value_type: "int", min: 0, required: false }
-              - { label: "Kat", name: "floor", widget: "string", required: false }
-              - { label: "Isinma", name: "heating", widget: "string", required: false }
-              - { label: "Aciklama", name: "description", widget: "text" }
-              - label: "Gorseller"
-                name: "images"
-                widget: "list"
-                field: { label: "Gorsel", name: "image", widget: "image" }
-              - { label: "One Cikar", name: "featured", widget: "boolean", default: false }
-              - { label: "Durum", name: "status", widget: "select", options: ["Yayinda", "Taslak"], default: "Yayinda" }
+          - { label: "İlanlar", name: "items", widget: "list", fields: [
+              { label: "ID", name: "id", widget: "string" },
+              { label: "Durum", name: "status", widget: "select", options: ["Yayinda","Taslak"], default: "Yayinda" },
+              { label: "Öne Çıkan", name: "featured", widget: "boolean", default: false, required: false },
+              { label: "Tür", name: "type", widget: "select", options: ["Satilik","Kiralik"], default: "Satilik" },
+              { label: "Başlık", name: "title", widget: "string" },
+              { label: "Fiyat", name: "price", widget: "number" },
+              { label: "Şehir", name: "city", widget: "string", default: "İstanbul" },
+              { label: "İlçe", name: "district", widget: "select", options: ["Pendik","Tuzla"] },
+              { label: "Mahalle", name: "neighborhood", widget: "string", required: false },
+              { label: "m²", name: "area", widget: "number" },
+              { label: "Oda", name: "rooms", widget: "string", required: false },
+              { label: "Kat", name: "floor", widget: "string", required: false },
+              { label: "Bina Yaşı", name: "age", widget: "number", required: false },
+              { label: "Isınma", name: "heating", widget: "string", required: false },
+
+              { label: "Telefon (WhatsApp için)", name: "phone", widget: "string", required: false },
+              { label: "Adres (opsiyonel)", name: "address", widget: "string", required: false },
+              { label: "Harita Sorgusu (ör: 'Pendik Marina' / tam adres)", name: "mapQuery", widget: "string", required: false },
+
+              { label: "Açıklama", name: "description", widget: "text" },
+              { label: "Görseller", name: "images", widget: "list", required: false, field: { label: "Görsel", name: "image", widget: "image" } }
+            ] }
