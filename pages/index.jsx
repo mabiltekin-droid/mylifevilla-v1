@@ -75,7 +75,7 @@ export default function Home() {
     <Layout>
       <section className="card p-6 overflow-hidden">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 badge bg-slate-100 text-slate-800">
+          <div className="inline-flex items-center gap-2 badge badge-gold">
             ✨ Premium • Pendik • Tuzla
           </div>
           <h1 className="mt-3 text-2xl md:text-4xl font-extrabold tracking-tight">

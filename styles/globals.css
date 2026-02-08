@@ -65,4 +65,46 @@ body {
 
 .muted { color: #64748b; }
 .hairline { border-color: rgba(226,232,240,0.9); }
+/* ===== Brand Theme (Green + Gold) ===== */
+
+body {
+  background: linear-gradient(180deg, #0f3d2e 0%, #f8fafc 260px);
+}
+
+/* Button base */
+.btn {
+  @apply inline-flex items-center justify-center rounded-full px-4 py-2 font-bold border border-slate-200 bg-white hover:bg-slate-50 transition;
+}
+
+/* Primary button */
+.btn-primary {
+  @apply border-transparent text-white;
+  background: #0f3d2e;
+}
+.btn-primary:hover {
+  background: #145c43;
+}
+
+/* Badges */
+.badge {
+  @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-extrabold border border-slate-200 bg-white;
+}
+
+.badge-gold {
+  border-color: rgba(199,161,74,.35);
+  background: rgba(199,161,74,.14);
+  color: #7a5a12;
+}
+.badge-brand {
+  border-color: rgba(15,61,46,.25);
+  background: rgba(15,61,46,.08);
+  color: #0f3d2e;
+}
+
+/* Focus ring */
+.btn:focus-visible {
+  outline: 3px solid rgba(199,161,74,.35);
+  outline-offset: 2px;
+}
+
 
