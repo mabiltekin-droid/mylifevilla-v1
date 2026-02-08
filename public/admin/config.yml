@@ -1,0 +1,43 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+publish_mode: simple
+
+collections:
+  - name: "listings"
+    label: "Ilanlar"
+    format: "json"
+    extension: "json"
+    files:
+      - file: "data/listings.json"
+        label: "Ilan Listesi"
+        name: "listings"
+        fields:
+          - label: "Ilanlar"
+            name: "items"
+            widget: "list"
+            summary: "{{fields.title}} - {{fields.district}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string" }
+              - { label: "Baslik", name: "title", widget: "string" }
+              - { label: "Fiyat", name: "price", widget: "number", value_type: "int", min: 0 }
+              - { label: "Tur", name: "type", widget: "select", options: ["Satilik", "Kiralik"] }
+              - { label: "Sehir", name: "city", widget: "string", default: "Istanbul" }
+              - { label: "Ilce", name: "district", widget: "select", options: ["Pendik", "Tuzla"] }
+              - { label: "Mahalle", name: "neighborhood", widget: "string", required: false }
+              - { label: "m2", name: "area", widget: "number", value_type: "int", min: 0 }
+              - { label: "Oda", name: "rooms", widget: "string" }
+              - { label: "Bina Yasi", name: "age", widget: "number", value_type: "int", min: 0, required: false }
+              - { label: "Kat", name: "floor", widget: "string", required: false }
+              - { label: "Isinma", name: "heating", widget: "string", required: false }
+              - { label: "Aciklama", name: "description", widget: "text" }
+              - label: "Gorseller"
+                name: "images"
+                widget: "list"
+                field: { label: "Gorsel", name: "image", widget: "image" }
+              - { label: "One Cikar", name: "featured", widget: "boolean", default: false }
+              - { label: "Durum", name: "status", widget: "select", options: ["Yayinda", "Taslak"], default: "Yayinda" }

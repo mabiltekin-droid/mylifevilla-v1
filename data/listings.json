@@ -1,0 +1,40 @@
+{ 
+  "items": [
+    {
+      "id": "pendik-orhangazi-3-1-001",
+      "title": "Pendik Orhangazi'de 3+1 Ferah Daire",
+      "price": 4250000,
+      "type": "Satilik",
+      "city": "Istanbul",
+      "district": "Pendik",
+      "neighborhood": "Orhangazi",
+      "area": 125,
+      "rooms": "3+1",
+      "age": 8,
+      "floor": "3",
+      "heating": "Kombi",
+      "description": "Marmaray'a yakin, aydinlik, masrafsiz.",
+      "images": [],
+      "featured": true,
+      "status": "Yayinda"
+    },
+    {
+      "id": "tuzla-aydinli-2-1-002",
+      "title": "Tuzla Aydinli'da 2+1 Site Ici",
+      "price": 22000,
+      "type": "Kiralik",
+      "city": "Istanbul",
+      "district": "Tuzla",
+      "neighborhood": "Aydinli",
+      "area": 90,
+      "rooms": "2+1",
+      "age": 5,
+      "floor": "5",
+      "heating": "Merkezi",
+      "description": "Site ici guvenlik, otopark, cocuk parki.",
+      "images": [],
+      "featured": false,
+      "status": "Yayinda"
+    }
+  ]
+}
