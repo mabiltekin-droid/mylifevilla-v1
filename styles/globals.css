@@ -2,11 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Premium base */
 :root { color-scheme: light; }
-body { background: #f8fafc; color: #0f172a; }
+html, body { height: 100%; }
+body {
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(99,102,241,0.10), transparent 60%),
+              radial-gradient(900px 500px at 90% 0%, rgba(16,185,129,0.10), transparent 55%),
+              #f8fafc;
+  color: #0f172a;
+}
 
-.container-max { max-width: 72rem; margin: 0 auto; padding: 0 1rem; }
-.card { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 1px 2px rgba(15,23,42,0.06); }
-.btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 0.75rem; padding: 0.5rem 1rem; font-weight: 700; border: 1px solid #e2e8f0; background: white; }
-.btn:hover { background: #f1f5f9; }
-.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.875rem; font-weight: 700; }
+/* Layout helpers */
+.container-max { max-width: 76rem; margin: 0 auto; padding: 0 1rem; }
+
+.card {
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(226,232,240,0.9);
+  border-radius: 1.25rem;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-weight: 800;
+  border: 1px solid rgba(226,232,240,0.95);
+  background: rgba(255,255,255,0.9);
+}
+.btn:hover { background: rgba(241,245,249,0.9); }
+
+.btn-primary {
+  border: 1px solid rgba(99,102,241,0.35);
+  background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(16,185,129,0.12));
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgba(99,102,241,0.24), rgba(16,185,129,0.16));
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.input {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(226,232,240,0.95);
+  padding: 0.6rem 0.85rem;
+  outline: none;
+  background: rgba(255,255,255,0.9);
+}
+.input:focus { box-shadow: 0 0 0 4px rgba(148,163,184,0.20); }
+
+.muted { color: #64748b; }
+.hairline { border-color: rgba(226,232,240,0.9); }
+

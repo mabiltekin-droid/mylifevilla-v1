@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import Layout from "../components/Layout";
 import FilterBar from "../components/FilterBar";
@@ -19,7 +18,6 @@ export default function Home() {
 
   const listings = useMemo(() => {
     const items = (data.items || []).filter(x => x.status === "Yayinda");
-
     const qn = normalize(q);
     const min = minPrice !== "" ? Number(minPrice) : null;
     const max = maxPrice !== "" ? Number(maxPrice) : null;
@@ -62,32 +60,43 @@ export default function Home() {
     setSort("featured");
   };
 
+  const liveCount = useMemo(() => (data.items || []).filter(x => x.status === "Yayinda").length, []);
   const featuredCount = useMemo(() => (data.items || []).filter(x => x.status === "Yayinda" && x.featured).length, []);
 
   return (
     <Layout>
       <section className="card p-6 overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 badge bg-slate-100 text-slate-800">
-              Pendik • Tuzla
+              ✨ Premium • Pendik • Tuzla
             </div>
-            <h1 className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight">
-              Premium Emlak İlanları
+            <h1 className="mt-3 text-2xl md:text-4xl font-extrabold tracking-tight">
+              Hayalindeki evi hızlıca bul
             </h1>
-            <p className="mt-2 text-slate-600">
-              Admin’den ekle → <span className="font-semibold">/admin</span>
+            <p className="mt-2 muted">
+              Filtrele, incele, favori ilanlarını vitrine al. Yönetim: <span className="font-semibold text-slate-700">/admin</span>
             </p>
+
+            <div className="mt-4 flex flex-wrap gap-3">
+              <div className="card px-4 py-3">
+                <div className="text-xs font-extrabold muted">Yayındaki ilan</div>
+                <div className="text-xl font-extrabold">{liveCount}</div>
+              </div>
+              <div className="card px-4 py-3">
+                <div className="text-xs font-extrabold muted">Öne çıkan</div>
+                <div className="text-xl font-extrabold">{featuredCount}</div>
+              </div>
+              <a className="btn btn-primary" href="/admin/">İlan ekle</a>
+            </div>
           </div>
 
-          <div className="flex gap-3">
-            <div className="card px-4 py-3">
-              <div className="text-xs font-bold text-slate-500">Yayındaki ilan</div>
-              <div className="text-xl font-extrabold">{(data.items || []).filter(x => x.status === "Yayinda").length}</div>
-            </div>
-            <div className="card px-4 py-3">
-              <div className="text-xs font-bold text-slate-500">Öne çıkan</div>
-              <div className="text-xl font-extrabold">{featuredCount}</div>
+          <div className="hidden lg:block">
+            <div className="card p-5 w-[360px]">
+              <div className="text-sm font-extrabold">İpucu</div>
+              <div className="mt-2 muted text-sm">
+                Admin panelden ilan ekledikten sonra “Publish” deyince otomatik GitHub commit + Netlify deploy olur.
+              </div>
             </div>
           </div>
         </div>
@@ -107,13 +116,13 @@ export default function Home() {
 
       <section className="mt-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-sm text-slate-600">
-            <span className="font-semibold">{listings.length}</span> ilan bulundu
+          <div className="text-sm muted">
+            <span className="font-extrabold text-slate-700">{listings.length}</span> ilan bulundu
           </div>
         </div>
 
         {listings.length === 0 ? (
-          <div className="card p-10 text-slate-600">Sonuç yok. Filtreleri sıfırla.</div>
+          <div className="card p-10 muted">Sonuç yok. Filtreleri sıfırla.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {listings.map(item => <PropertyCard key={item.id} item={item} />)}

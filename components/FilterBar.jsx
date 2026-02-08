@@ -1,4 +1,3 @@
-
 export default function FilterBar({
   q, setQ,
   district, setDistrict,
@@ -12,9 +11,9 @@ export default function FilterBar({
     <div className="card p-4">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
         <div className="md:col-span-4">
-          <label className="text-xs font-bold text-slate-600">Ara</label>
+          <label className="text-xs font-extrabold muted">Ara</label>
           <input
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+            className="input mt-1"
             placeholder="Başlık, mahalle, oda (3+1)..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -22,9 +21,9 @@ export default function FilterBar({
         </div>
 
         <div className="md:col-span-2">
-          <label className="text-xs font-bold text-slate-600">İlçe</label>
+          <label className="text-xs font-extrabold muted">İlçe</label>
           <select
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+            className="input mt-1"
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
           >
@@ -35,9 +34,9 @@ export default function FilterBar({
         </div>
 
         <div className="md:col-span-2">
-          <label className="text-xs font-bold text-slate-600">Tür</label>
+          <label className="text-xs font-extrabold muted">Tür</label>
           <select
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+            className="input mt-1"
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
@@ -48,9 +47,9 @@ export default function FilterBar({
         </div>
 
         <div className="md:col-span-2">
-          <label className="text-xs font-bold text-slate-600">Min ₺</label>
+          <label className="text-xs font-extrabold muted">Min ₺</label>
           <input
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+            className="input mt-1"
             type="number"
             min="0"
             placeholder="0"
@@ -60,9 +59,9 @@ export default function FilterBar({
         </div>
 
         <div className="md:col-span-2">
-          <label className="text-xs font-bold text-slate-600">Max ₺</label>
+          <label className="text-xs font-extrabold muted">Max ₺</label>
           <input
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+            className="input mt-1"
             type="number"
             min="0"
             placeholder="∞"
@@ -72,9 +71,9 @@ export default function FilterBar({
         </div>
 
         <div className="md:col-span-10">
-          <label className="text-xs font-bold text-slate-600">Sıralama</label>
+          <label className="text-xs font-extrabold muted">Sıralama</label>
           <select
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+            className="input mt-1"
             value={sort}
             onChange={(e) => setSort(e.target.value)}
           >
