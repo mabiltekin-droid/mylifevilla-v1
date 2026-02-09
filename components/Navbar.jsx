@@ -2,7 +2,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-30">
       <div className="lux-topbar" />
-      <div className="border-b hairline bg-white/70 backdrop-blur">
+      <div className="border-b hairline lux-navbar">
         <div className="container-max h-16 flex items-center justify-between">
           <a href="/" className="flex items-center">
             <img
