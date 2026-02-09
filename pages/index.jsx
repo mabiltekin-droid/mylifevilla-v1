@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
 import Layout from "../components/Layout";
 import FilterBar from "../components/FilterBar";
 import PropertyCard from "../components/PropertyCard";
@@ -9,13 +10,36 @@ function normalize(s) {
   return (s || "").toString().toLowerCase().trim();
 }
 
+function pickQuery(routerQuery, key, fallback = "") {
+  const v = routerQuery?.[key];
+  if (typeof v === "string") return v;
+  return fallback;
+}
+
+function cleanQuery(obj){
+  const out = {};
+  for (const [k, v] of Object.entries(obj || {})) {
+    if (v === undefined || v === null) continue;
+    const s = String(v);
+    if (!s.length) continue;
+    out[k] = s;
+  }
+  return out;
+}
+
 export default function Home() {
+  const router = useRouter();
+  const [hydrated, setHydrated] = useState(false);
+
   const [q, setQ] = useState("");
   const [district, setDistrict] = useState("ALL");
   const [type, setType] = useState("ALL");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("featured");
+
+  // Mini skeleton (premium hissi)
+  const [pending, setPending] = useState(false);
 
   const liveItems = useMemo(
     () => (data.items || []).filter((x) => x.status === "Yayinda"),
@@ -26,6 +50,56 @@ export default function Home() {
     () => liveItems.filter((x) => x.featured),
     [liveItems]
   );
+
+  // 1) URL -> State (ilk yüklemede)
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const qq = pickQuery(router.query, "q", "");
+    const dd = pickQuery(router.query, "district", "ALL");
+    const tt = pickQuery(router.query, "type", "ALL");
+    const min = pickQuery(router.query, "min", "");
+    const max = pickQuery(router.query, "max", "");
+    const ss = pickQuery(router.query, "sort", "featured");
+
+    setQ(qq);
+    setDistrict(dd || "ALL");
+    setType(tt || "ALL");
+    setMinPrice(min);
+    setMaxPrice(max);
+    setSort(ss || "featured");
+
+    setHydrated(true);
+  }, [router.isReady]); // sadece ilk hazır olunca
+
+  // 2) State -> URL (değişince URL güncelle; paylaşılabilir link)
+  useEffect(() => {
+    if (!router.isReady || !hydrated) return;
+
+    const next = cleanQuery({
+      q: q || "",
+      district: district !== "ALL" ? district : "",
+      type: type !== "ALL" ? type : "",
+      min: minPrice !== "" ? minPrice : "",
+      max: maxPrice !== "" ? maxPrice : "",
+      sort: sort !== "featured" ? sort : "",
+    });
+
+    // yazarken URL spam olmasın diye q için minik debounce
+    const t = setTimeout(() => {
+      router.replace({ pathname: "/", query: next }, undefined, { shallow: true, scroll: false });
+    }, q ? 250 : 0);
+
+    return () => clearTimeout(t);
+  }, [router.isReady, hydrated, q, district, type, minPrice, maxPrice, sort]);
+
+  // Skeleton tetikle (filtre her değiştiğinde kısa anim)
+  useEffect(() => {
+    if (!hydrated) return;
+    setPending(true);
+    const t = setTimeout(() => setPending(false), 180);
+    return () => clearTimeout(t);
+  }, [hydrated, q, district, type, minPrice, maxPrice, sort]);
 
   const listings = useMemo(() => {
     const items = liveItems;
@@ -72,7 +146,11 @@ export default function Home() {
   };
 
   return (
-    <Layout>
+    <Layout
+      title="MyLifeVilla | Pendik & Tuzla Emlak"
+      desc="Pendik ve Tuzla bölgesinde satılık & kiralık emlak ilanları. Öne çıkan ilanlar, filtreleme ve detay sayfaları."
+      path="/"
+    >
       <section className="card p-6 overflow-hidden">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 badge badge-gold">
@@ -119,7 +197,20 @@ export default function Home() {
           </div>
         </div>
 
-        {listings.length === 0 ? (
+        {pending ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="card overflow-hidden">
+                <div className="h-48 skeleton" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 w-3/4 skeleton rounded" />
+                  <div className="h-3 w-1/2 skeleton rounded" />
+                  <div className="h-6 w-2/3 skeleton rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : listings.length === 0 ? (
           <div className="card p-10 muted">Sonuç yok. Filtreleri sıfırla.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

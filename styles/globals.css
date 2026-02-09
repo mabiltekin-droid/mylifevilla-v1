@@ -92,3 +92,15 @@ body{
   height: 3px;
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
+
+
+/* ===== Skeleton (premium) ===== */
+.skeleton{
+  background: linear-gradient(90deg, rgba(15,23,42,.06), rgba(15,23,42,.10), rgba(15,23,42,.06));
+  background-size: 200% 100%;
+  animation: sk 1.05s ease-in-out infinite;
+}
+@keyframes sk{
+  0%{ background-position: 200% 0; }
+  100%{ background-position: -200% 0; }
+}

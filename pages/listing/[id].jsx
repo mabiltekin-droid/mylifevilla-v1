@@ -9,22 +9,27 @@ function formatTRY(n){
   return new Intl.NumberFormat("tr-TR").format(num);
 }
 
+function normalizePhone(p){
+  const s = String(p || "").replace(/[^0-9]/g, "");
+  // 90 ile başlamıyorsa TR varsay (çok kaba ama iş görür)
+  if (!s) return "";
+  if (s.startsWith("90")) return s;
+  if (s.startsWith("0")) return "9" + s; // 0xxxxxxxxxx -> 90xxxxxxxxxx
+  return "90" + s;
+}
+
 export async function getStaticPaths() {
-  const paths = (listings || []).map((item) => ({
+  const items = (listings?.items || []);
+  const paths = items.map((item) => ({
     params: { id: String(item.id) },
   }));
-
   return { paths, fallback: false };
 }
 
 export async function getStaticProps({ params }) {
   const id = String(params?.id ?? "");
-  const item = (listings || []).find((x) => String(x.id) === id);
-
-  if (!item) {
-    return { notFound: true };
-  }
-
+  const item = (listings?.items || []).find((x) => String(x.id) === id);
+  if (!item) return { notFound: true };
   return { props: { item } };
 }
 
@@ -47,6 +52,12 @@ export default function ListingDetail({ item }) {
   const cover = images[0] || "/og.jpg";
   const title = `${item.title} | MyLifeVilla`;
   const desc = `${item.city} / ${item.district}${item.neighborhood ? " - " + item.neighborhood : ""} • ${formatTRY(item.price)} ₺ • ${item.area || ""} m²`.trim();
+
+  // WhatsApp
+  const rawPhone = item.phone || item.contactPhone || item.whatsapp || "";
+  const phone = normalizePhone(rawPhone) || "905000000000"; // <- burayı kendi numaranla değiştir
+  const waText = encodeURIComponent(`Merhaba, "${item.title}" ilanı hakkında bilgi almak istiyorum.\n\nLink: ${typeof window !== "undefined" ? window.location.href : ""}`);
+  const waLink = `https://wa.me/${phone}?text=${waText}`;
 
   return (
     <Layout
@@ -73,20 +84,25 @@ export default function ListingDetail({ item }) {
               </div>
             </div>
 
-            <div className="text-right">
-              <div className="text-2xl font-extrabold text-slate-900">
-                {formatTRY(item.price)} ₺
+            <div className="text-right space-y-3">
+              <div>
+                <div className="text-2xl font-extrabold text-slate-900">
+                  {formatTRY(item.price)} ₺
+                </div>
+                <div className="mt-1 text-sm muted">
+                  {item.area ? <span className="font-bold text-slate-700">{item.area}</span> : null} m²
+                  {item.rooms ? <span> • <span className="font-bold text-slate-700">{item.rooms}</span></span> : null}
+                </div>
               </div>
-              <div className="mt-1 text-sm muted">
-                {item.area ? <span className="font-bold text-slate-700">{item.area}</span> : null} m²
-                {item.rooms ? <span> • <span className="font-bold text-slate-700">{item.rooms}</span></span> : null}
-              </div>
+
+              <a className="btn btn-primary" href={waLink} target="_blank" rel="noreferrer">
+                WhatsApp ile iletişim
+              </a>
             </div>
           </div>
         </div>
 
         <div className="p-6">
-          {/* Gallery */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {(images.length ? images : [null, null, null]).slice(0, 6).map((src, i) => (
               <button
@@ -109,7 +125,6 @@ export default function ListingDetail({ item }) {
             ))}
           </div>
 
-          {/* Details */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
               <div className="font-extrabold text-slate-900">Açıklama</div>
@@ -119,7 +134,8 @@ export default function ListingDetail({ item }) {
             </div>
 
             <div className="card p-5">
-              <div className="font-extrabold text-slate-900">Özet</div>
+              <div className="font-extrabold text-slate-900">Hızlı İşlem</div>
+
               <div className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between gap-3">
                   <span className="muted">İlçe</span>
@@ -131,29 +147,24 @@ export default function ListingDetail({ item }) {
                     <span className="font-bold text-slate-900">{item.neighborhood}</span>
                   </div>
                 ) : null}
-                {item.area ? (
-                  <div className="flex justify-between gap-3">
-                    <span className="muted">m²</span>
-                    <span className="font-bold text-slate-900">{item.area}</span>
-                  </div>
-                ) : null}
-                {item.rooms ? (
-                  <div className="flex justify-between gap-3">
-                    <span className="muted">Oda</span>
-                    <span className="font-bold text-slate-900">{item.rooms}</span>
-                  </div>
-                ) : null}
-                <div className="pt-3">
-                  <a className="btn btn-primary w-full" href="/">
+
+                <div className="pt-3 space-y-2">
+                  <a className="btn btn-primary w-full" href={waLink} target="_blank" rel="noreferrer">
+                    WhatsApp
+                  </a>
+                  <a className="btn w-full" href="/">
                     Tüm ilanlara dön
                   </a>
+                </div>
+
+                <div className="pt-2 text-xs muted">
+                  * WhatsApp numarası için listings.json'a <span className="font-bold">phone</span> alanı ekleyebilirsin.
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Modal */}
         {open ? (
           <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setOpen(false)}>
             <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
