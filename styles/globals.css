@@ -174,3 +174,7 @@ section > h2, section > h3, .section-title{
 
 /* Leaflet font */
 .leaflet-container{ font-family: inherit; }
+
+
+/* ===== Pack-6 extras ===== */
+a{ text-decoration: none; }

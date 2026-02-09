@@ -44,6 +44,10 @@ export default function Home() {
 
   const [pending, setPending] = useState(false);
 
+  // Pagination
+  const PAGE = 12;
+  const [visible, setVisible] = useState(PAGE);
+
   const liveItems = useMemo(
     () => (data.items || []).filter((x) => x.status === "Yayinda"),
     []
@@ -100,6 +104,12 @@ export default function Home() {
     return () => clearTimeout(t);
   }, [hydrated, q, district, type, minPrice, maxPrice, sort]);
 
+  // Filtre değişince sayfalama sıfırlansın
+  useEffect(() => {
+    if (!hydrated) return;
+    setVisible(PAGE);
+  }, [hydrated, q, district, type, minPrice, maxPrice, sort]);
+
   const listings = useMemo(() => {
     const items = liveItems;
     const qn = normalize(q);
@@ -135,6 +145,8 @@ export default function Home() {
     return filtered;
   }, [liveItems, q, district, type, minPrice, maxPrice, sort]);
 
+  const shown = useMemo(() => listings.slice(0, visible), [listings, visible]);
+
   const onReset = () => {
     setQ("");
     setDistrict("ALL");
@@ -145,11 +157,7 @@ export default function Home() {
   };
 
   return (
-    <Layout
-      title="MyLifeVilla | Pendik & Tuzla Emlak"
-      desc="Pendik ve Tuzla bölgesinde satılık & kiralık emlak ilanları. Öne çıkan ilanlar, filtreleme ve detay sayfaları."
-      path="/"
-    >
+    <Layout title="MyLifeVilla | Pendik & Tuzla Emlak" desc="Pendik ve Tuzla bölgesinde satılık & kiralık emlak ilanları." path="/">
       <section className="card p-6 overflow-hidden page-text">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 badge badge-gold">
@@ -177,7 +185,6 @@ export default function Home() {
 
       <FeaturedCarousel items={featured} />
 
-      {/* Sticky Filter */}
       <div className="mt-4 sticky top-[76px] z-20">
         <FilterBar
           q={q} setQ={setQ}
@@ -190,7 +197,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Map (top results) */}
       <div className="mt-4">
         <ListingMap items={listings.slice(0, 30)} />
       </div>
@@ -200,7 +206,10 @@ export default function Home() {
           <div className="text-sm" style={{ color: "rgba(234,242,239,.85)" }}>
             <span className="font-extrabold" style={{ color:"#eaf2ef" }}>{listings.length}</span> ilan bulundu
           </div>
-          <a className="btn" href="/compare">Karşılaştır</a>
+          <div className="flex gap-2">
+            <a className="btn" href="/compare">Karşılaştır</a>
+            <a className="btn" href="/favorites">Favoriler</a>
+          </div>
         </div>
 
         {pending ? (
@@ -216,12 +225,22 @@ export default function Home() {
               </div>
             ))}
           </div>
-        ) : listings.length === 0 ? (
+        ) : shown.length === 0 ? (
           <div className="card p-10 muted page-text">Sonuç yok. Filtreleri sıfırla.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {listings.map((item) => <PropertyCard key={item.id} item={item} />)}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {shown.map((item) => <PropertyCard key={item.id} item={item} />)}
+            </div>
+
+            {visible < listings.length ? (
+              <div className="mt-5 flex justify-center">
+                <button className="btn btn-primary" onClick={() => setVisible(v => v + PAGE)}>
+                  Daha fazla yükle ({Math.min(visible + PAGE, listings.length)}/{listings.length})
+                </button>
+              </div>
+            ) : null}
+          </>
         )}
       </section>
 

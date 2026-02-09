@@ -5,19 +5,15 @@ import { toAbsUrl } from "../../lib/seo";
 import { isFav, toggleFav } from "../../lib/favorites";
 import { isCompared, toggleCompare } from "../../lib/compare";
 import { isNew } from "../../lib/date";
+import AdvisorCard from "../../components/AdvisorCard";
+import VisitRequestForm from "../../components/VisitRequestForm";
+import ShareButtons from "../../components/ShareButtons";
+import RelatedListings from "../../components/RelatedListings";
 
 function formatTRY(n){
   const num = Number(n);
   if (!Number.isFinite(num)) return String(n);
   return new Intl.NumberFormat("tr-TR").format(num);
-}
-
-function normalizePhone(p){
-  const s = String(p || "").replace(/[^0-9]/g, "");
-  if (!s) return "";
-  if (s.startsWith("90")) return s;
-  if (s.startsWith("0")) return "9" + s;
-  return "90" + s;
 }
 
 export async function getStaticPaths() {
@@ -34,6 +30,7 @@ export async function getStaticProps({ params }) {
 }
 
 export default function ListingDetail({ item }) {
+  const allItems = (listings?.items || []);
   const images = useMemo(() => (item?.images || []).filter(Boolean), [item]);
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
@@ -62,14 +59,6 @@ export default function ListingDetail({ item }) {
   const desc = `${item.city} / ${item.district}${item.neighborhood ? " - " + item.neighborhood : ""} • ${formatTRY(item.price)} ₺ • ${item.area || ""} m²`.trim();
 
   const newly = isNew(item.createdAt, 7);
-
-  // WhatsApp
-  const rawPhone = item.phone || item.contactPhone || item.whatsapp || "";
-  const phone = normalizePhone(rawPhone) || "905000000000"; // <- kendi numaranla değiştir
-  const waText = encodeURIComponent(
-    `Merhaba!\n\nİlan: ${item.title}\nFiyat: ${formatTRY(item.price)} ₺\nDetay: ${item.area || "-"} m² • ${item.rooms || "-"}\nKonum: ${item.district}${item.neighborhood ? " / " + item.neighborhood : ""}\n\nLink: ${typeof window !== "undefined" ? window.location.href : ""}\n\nBilgi alabilir miyim?`
-  );
-  const waLink = `https://wa.me/${phone}?text=${waText}`;
 
   const onFav = () => {
     const next = toggleFav(item.id);
@@ -116,10 +105,12 @@ export default function ListingDetail({ item }) {
                 </div>
               </div>
 
-              <a className="btn btn-primary" href={waLink} target="_blank" rel="noreferrer">
-                WhatsApp ile iletişim
-              </a>
+              <a className="btn btn-primary" href="#visit">Ziyaret talebi</a>
             </div>
+          </div>
+
+          <div className="mt-4">
+            <ShareButtons title={item.title} />
           </div>
         </div>
 
@@ -162,31 +153,39 @@ export default function ListingDetail({ item }) {
             <div className="md:col-span-2">
               <div className="font-extrabold text-slate-900">Açıklama</div>
               <p className="mt-2 muted whitespace-pre-line">{item.description || "Açıklama eklenecek."}</p>
+
+              <div id="visit" className="mt-6">
+                <VisitRequestForm item={item} />
+              </div>
             </div>
 
-            <div className="card p-5">
-              <div className="font-extrabold text-slate-900">Hızlı İşlem</div>
+            <div className="space-y-4">
+              <AdvisorCard item={item} />
 
-              <div className="mt-3 space-y-2 text-sm">
-                <div className="flex justify-between gap-3">
-                  <span className="muted">İlçe</span>
-                  <span className="font-bold text-slate-900">{item.district}</span>
-                </div>
-                {item.neighborhood ? (
+              <div className="card p-5 page-text">
+                <div className="font-extrabold text-slate-900">Hızlı İşlem</div>
+                <div className="mt-3 space-y-2 text-sm">
                   <div className="flex justify-between gap-3">
-                    <span className="muted">Mahalle</span>
-                    <span className="font-bold text-slate-900">{item.neighborhood}</span>
+                    <span className="muted">İlçe</span>
+                    <span className="font-bold text-slate-900">{item.district}</span>
                   </div>
-                ) : null}
-
-                <div className="pt-3 space-y-2">
-                  <a className="btn btn-primary w-full" href={waLink} target="_blank" rel="noreferrer">WhatsApp</a>
-                  <a className="btn w-full" href="/compare">Karşılaştır’a git</a>
-                  <a className="btn w-full" href="/">Tüm ilanlara dön</a>
+                  {item.neighborhood ? (
+                    <div className="flex justify-between gap-3">
+                      <span className="muted">Mahalle</span>
+                      <span className="font-bold text-slate-900">{item.neighborhood}</span>
+                    </div>
+                  ) : null}
+                  <div className="pt-3 space-y-2">
+                    <a className="btn w-full" href="/compare">Karşılaştır’a git</a>
+                    <a className="btn w-full" href="/favorites">Favoriler</a>
+                    <a className="btn w-full" href="/">Tüm ilanlara dön</a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <RelatedListings item={item} items={allItems} />
         </div>
 
         {/* Modal */}
