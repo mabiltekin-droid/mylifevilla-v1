@@ -14,7 +14,7 @@ export default function ScrollToTop(){
 
   return (
     <button
-      className="btn"
+  className="btn scroll-top-btn"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       style={{ position:"fixed", right:16, bottom:16, zIndex:60 }}
       aria-label="Yukarı çık"

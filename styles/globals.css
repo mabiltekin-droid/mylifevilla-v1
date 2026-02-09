@@ -178,3 +178,21 @@ section > h2, section > h3, .section-title{
 
 /* ===== Pack-6 extras ===== */
 a{ text-decoration: none; }
+
+
+/* ===== Button Color Fix ===== */
+
+/* Karşılaştır / Favoriler / normal butonlar koyu yazı */
+.btn{
+  color:#0f172a;
+}
+
+/* ScrollToTop özel */
+.scroll-top-btn{
+  color:#0f172a !important;
+}
+
+/* Primary zaten beyaz kalsın */
+.btn-primary{
+  color:#ffffff !important;
+}
