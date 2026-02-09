@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import Layout from "../components/Layout";
 import FilterBar from "../components/FilterBar";
 import PropertyCard from "../components/PropertyCard";
 import FeaturedCarousel from "../components/FeaturedCarousel";
+import ScrollToTop from "../components/ScrollToTop";
 import data from "../data/listings.json";
+
+const ListingMap = dynamic(() => import("../components/ListingMap"), { ssr: false });
 
 function normalize(s) {
   return (s || "").toString().toLowerCase().trim();
@@ -38,7 +42,6 @@ export default function Home() {
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("featured");
 
-  // Mini skeleton (premium hissi)
   const [pending, setPending] = useState(false);
 
   const liveItems = useMemo(
@@ -51,7 +54,6 @@ export default function Home() {
     [liveItems]
   );
 
-  // 1) URL -> State (ilk yüklemede)
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -70,9 +72,8 @@ export default function Home() {
     setSort(ss || "featured");
 
     setHydrated(true);
-  }, [router.isReady]); // sadece ilk hazır olunca
+  }, [router.isReady]);
 
-  // 2) State -> URL (değişince URL güncelle; paylaşılabilir link)
   useEffect(() => {
     if (!router.isReady || !hydrated) return;
 
@@ -85,7 +86,6 @@ export default function Home() {
       sort: sort !== "featured" ? sort : "",
     });
 
-    // yazarken URL spam olmasın diye q için minik debounce
     const t = setTimeout(() => {
       router.replace({ pathname: "/", query: next }, undefined, { shallow: true, scroll: false });
     }, q ? 250 : 0);
@@ -93,7 +93,6 @@ export default function Home() {
     return () => clearTimeout(t);
   }, [router.isReady, hydrated, q, district, type, minPrice, maxPrice, sort]);
 
-  // Skeleton tetikle (filtre her değiştiğinde kısa anim)
   useEffect(() => {
     if (!hydrated) return;
     setPending(true);
@@ -151,7 +150,7 @@ export default function Home() {
       desc="Pendik ve Tuzla bölgesinde satılık & kiralık emlak ilanları. Öne çıkan ilanlar, filtreleme ve detay sayfaları."
       path="/"
     >
-      <section className="card p-6 overflow-hidden">
+      <section className="card p-6 overflow-hidden page-text">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 badge badge-gold">
             ✨ Premium • Pendik • Tuzla
@@ -178,7 +177,8 @@ export default function Home() {
 
       <FeaturedCarousel items={featured} />
 
-      <div className="mt-4">
+      {/* Sticky Filter */}
+      <div className="mt-4 sticky top-[76px] z-20">
         <FilterBar
           q={q} setQ={setQ}
           district={district} setDistrict={setDistrict}
@@ -190,17 +190,23 @@ export default function Home() {
         />
       </div>
 
+      {/* Map (top results) */}
+      <div className="mt-4">
+        <ListingMap items={listings.slice(0, 30)} />
+      </div>
+
       <section className="mt-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-sm muted">
-            <span className="font-extrabold text-slate-700">{listings.length}</span> ilan bulundu
+          <div className="text-sm" style={{ color: "rgba(234,242,239,.85)" }}>
+            <span className="font-extrabold" style={{ color:"#eaf2ef" }}>{listings.length}</span> ilan bulundu
           </div>
+          <a className="btn" href="/compare">Karşılaştır</a>
         </div>
 
         {pending ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="card overflow-hidden">
+              <div key={i} className="card overflow-hidden page-text">
                 <div className="h-48 skeleton" />
                 <div className="p-5 space-y-3">
                   <div className="h-4 w-3/4 skeleton rounded" />
@@ -211,13 +217,15 @@ export default function Home() {
             ))}
           </div>
         ) : listings.length === 0 ? (
-          <div className="card p-10 muted">Sonuç yok. Filtreleri sıfırla.</div>
+          <div className="card p-10 muted page-text">Sonuç yok. Filtreleri sıfırla.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {listings.map((item) => <PropertyCard key={item.id} item={item} />)}
           </div>
         )}
       </section>
+
+      <ScrollToTop />
     </Layout>
   );
 }
