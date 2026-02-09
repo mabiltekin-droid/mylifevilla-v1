@@ -2,109 +2,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium base */
-:root { color-scheme: light; }
-html, body { height: 100%; }
-body {
-  background: radial-gradient(1200px 600px at 20% -10%, rgba(99,102,241,0.10), transparent 60%),
-              radial-gradient(900px 500px at 90% 0%, rgba(16,185,129,0.10), transparent 55%),
-              #f8fafc;
-  color: #0f172a;
+/* ===== Base ===== */
+:root{
+  --brand:#0f3d2e;
+  --brand2:#145c43;
+  --gold:#c7a14a;
+  --gold2:#e7c873;
 }
 
-/* Layout helpers */
-.container-max { max-width: 76rem; margin: 0 auto; padding: 0 1rem; }
-
-.card {
-  background: rgba(255,255,255,0.85);
-  border: 1px solid rgba(226,232,240,0.9);
-  border-radius: 1.25rem;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(10px);
+body{
+  background: radial-gradient(1200px 500px at 50% -200px, rgba(15,61,46,.18), transparent 60%),
+              linear-gradient(180deg, #fbfbfa 0%, #f5f6f7 100%);
+  color:#0f172a;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  border-radius: 999px;
-  padding: 0.55rem 1rem;
-  font-weight: 800;
-  border: 1px solid rgba(226,232,240,0.95);
-  background: rgba(255,255,255,0.9);
-}
-.btn:hover { background: rgba(241,245,249,0.9); }
-
-.btn-primary {
-  border: 1px solid rgba(99,102,241,0.35);
-  background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(16,185,129,0.12));
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, rgba(99,102,241,0.24), rgba(16,185,129,0.16));
+.container-max{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.85rem;
-  font-weight: 800;
+.hairline{ border-color: rgba(15,23,42,.10); }
+
+.muted{ color: rgba(15,23,42,.65); }
+
+/* ===== Cards ===== */
+.card{
+  @apply rounded-3xl border bg-white/85 backdrop-blur;
+  border-color: rgba(15,23,42,.10);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.6) inset,
+    0 10px 30px rgba(2,6,23,.06);
 }
 
-.input {
-  width: 100%;
-  border-radius: 1rem;
-  border: 1px solid rgba(226,232,240,0.95);
-  padding: 0.6rem 0.85rem;
-  outline: none;
-  background: rgba(255,255,255,0.9);
+.card-hover{
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
-.input:focus { box-shadow: 0 0 0 4px rgba(148,163,184,0.20); }
-
-.muted { color: #64748b; }
-.hairline { border-color: rgba(226,232,240,0.9); }
-/* ===== Brand Theme (Green + Gold) ===== */
-
-body {
-  background: linear-gradient(180deg, #0f3d2e 0%, #f8fafc 260px);
+.card-hover:hover{
+  transform: translateY(-2px);
+  border-color: rgba(199,161,74,.28);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.7) inset,
+    0 18px 46px rgba(2,6,23,.12);
 }
 
-/* Button base */
-.btn {
-  @apply inline-flex items-center justify-center rounded-full px-4 py-2 font-bold border border-slate-200 bg-white hover:bg-slate-50 transition;
+/* ===== Buttons ===== */
+.btn{
+  @apply inline-flex items-center justify-center rounded-full px-4 py-2 font-extrabold;
+  border: 1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.85);
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.btn:hover{
+  background: rgba(255,255,255,.95);
+  border-color: rgba(15,23,42,.18);
+}
+.btn:active{ transform: translateY(1px); }
+
+.btn-primary{
+  border-color: rgba(15,61,46,.15);
+  background: linear-gradient(180deg, var(--brand) 0%, #0c2f24 100%);
+  color: white;
+  box-shadow: 0 10px 24px rgba(15,61,46,.20);
+}
+.btn-primary:hover{
+  background: linear-gradient(180deg, var(--brand2) 0%, var(--brand) 100%);
+  border-color: rgba(199,161,74,.25);
 }
 
-/* Primary button */
-.btn-primary {
-  @apply border-transparent text-white;
-  background: #0f3d2e;
+/* ===== Badges ===== */
+.badge{
+  @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.8);
 }
-.btn-primary:hover {
-  background: #145c43;
+.badge-brand{
+  border-color: rgba(15,61,46,.18);
+  background: rgba(15,61,46,.10);
+  color: var(--brand);
 }
-
-/* Badges */
-.badge {
-  @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-extrabold border border-slate-200 bg-white;
-}
-
-.badge-gold {
-  border-color: rgba(199,161,74,.35);
+.badge-gold{
+  border-color: rgba(199,161,74,.25);
   background: rgba(199,161,74,.14);
   color: #7a5a12;
 }
-.badge-brand {
-  border-color: rgba(15,61,46,.25);
-  background: rgba(15,61,46,.08);
-  color: #0f3d2e;
+
+/* ===== Header line (luxury) ===== */
+.lux-topbar{
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
-
-/* Focus ring */
-.btn:focus-visible {
-  outline: 3px solid rgba(199,161,74,.35);
-  outline-offset: 2px;
-}
-
-
