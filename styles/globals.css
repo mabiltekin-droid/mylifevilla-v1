@@ -91,10 +91,20 @@ body{
 }
 
 /* ===== Header line (luxury) ===== */
+
+/* ===== Gold Top Bar ===== */
 .lux-topbar{
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #c7a14a 20%,
+    #e7c873 50%,
+    #c7a14a 80%,
+    transparent
+  );
 }
+
 
 
 /* ===== Skeleton (premium) ===== */
