@@ -1,165 +1,181 @@
-import { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../../components/Layout";
-import Gallery from "../../components/Gallery";
-import WhatsAppButton from "../../components/WhatsAppButton";
-import FloatingWhatsApp from "../../components/FloatingWhatsApp";
-import MapEmbed from "../../components/MapEmbed";
-import PropertyCard from "../../components/PropertyCard";
-import data from "../../data/listings.json";
+import listings from "../../data/listings.json";
+import { toAbsUrl } from "../../lib/seo";
 
-function formatTRY(n) {
+function formatTRY(n){
   const num = Number(n);
   if (!Number.isFinite(num)) return String(n);
   return new Intl.NumberFormat("tr-TR").format(num);
 }
 
 export async function getStaticPaths() {
-  const paths = (data.items || [])
-    .filter((x) => x.status === "Yayinda")
-    .map((x) => ({ params: { id: x.id } }));
+  const paths = (listings || []).map((item) => ({
+    params: { id: String(item.id) },
+  }));
+
   return { paths, fallback: false };
 }
 
 export async function getStaticProps({ params }) {
-  const item = (data.items || []).find((x) => x.id === params.id) || null;
+  const id = String(params?.id ?? "");
+  const item = (listings || []).find((x) => String(x.id) === id);
+
+  if (!item) {
+    return { notFound: true };
+  }
+
   return { props: { item } };
 }
 
-export default function Detail({ item }) {
+export default function ListingDetail({ item }) {
   const images = useMemo(() => (item?.images || []).filter(Boolean), [item]);
-  const mapQ = item?.mapQuery || item?.address || "";
-  const allLive = useMemo(() => (data.items || []).filter(x => x.status === "Yayinda"), []);
+  const [open, setOpen] = useState(false);
+  const [idx, setIdx] = useState(0);
 
-  const similar = useMemo(() => {
-    if (!item) return [];
-    return allLive
-      .filter(x =>
-        x.id !== item.id &&
-        x.district === item.district &&
-        x.type === item.type
-      )
-      .slice(0, 6);
-  }, [allLive, item]);
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+      if (!open) return;
+      if (e.key === "ArrowRight") setIdx((v) => Math.min(v + 1, images.length - 1));
+      if (e.key === "ArrowLeft") setIdx((v) => Math.max(v - 1, 0));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, images.length]);
 
-  if (!item) return null;
-
-  const badge =
-    item.type === "Satilik"
-      ? "bg-emerald-100 text-emerald-800"
-      : "bg-sky-100 text-sky-800";
+  const cover = images[0] || "/og.jpg";
+  const title = `${item.title} | MyLifeVilla`;
+  const desc = `${item.city} / ${item.district}${item.neighborhood ? " - " + item.neighborhood : ""} • ${formatTRY(item.price)} ₺ • ${item.area || ""} m²`.trim();
 
   return (
-    <Layout>
-      <div className="mb-4 flex items-center justify-between">
-        <a className="btn" href="/">← Geri</a>
-      </div>
-
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <Gallery images={images} title={item.title} />
-
-          <div className="card p-6 mt-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={`badge ${badge}`}>{item.type === "Satilik" ? "Satılık" : "Kiralık"}</span>
-              {item.featured ? <span className="badge bg-amber-100 text-amber-800">Öne Çıkan</span> : null}
-              <span className="badge bg-slate-100 text-slate-800">{item.district}</span>
-              {item.neighborhood ? <span className="badge bg-slate-100 text-slate-800">{item.neighborhood}</span> : null}
+    <Layout
+      title={title}
+      desc={desc}
+      image={toAbsUrl(cover)}
+      path={`/listing/${item.id}`}
+    >
+      <div className="card overflow-hidden">
+        <div className="p-6 border-b hairline">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+                {item.title}
+              </h1>
+              <div className="mt-2 muted">
+                {item.city} / {item.district}{item.neighborhood ? ` • ${item.neighborhood}` : ""}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className={`badge ${item.type === "Satilik" ? "badge-brand" : ""}`}>
+                  {item.type === "Satilik" ? "Satılık" : "Kiralık"}
+                </span>
+                {item.featured ? <span className="badge badge-gold">Öne Çıkan</span> : null}
+              </div>
             </div>
 
-            <h1 className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight">
-              {item.title}
-            </h1>
-
-            <div className="mt-2 muted">
-              {item.city} / {item.district}{item.neighborhood ? ` • ${item.neighborhood}` : ""}
-            </div>
-
-            <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
-              <div className="text-2xl font-extrabold">
+            <div className="text-right">
+              <div className="text-2xl font-extrabold text-slate-900">
                 {formatTRY(item.price)} ₺
-                {item.type === "Kiralik" ? <span className="text-base font-semibold muted"> /ay</span> : null}
               </div>
-
-              <div className="text-sm muted">
-                <span className="font-semibold text-slate-700">{item.area}</span> m² •{" "}
-                <span className="font-semibold text-slate-700">{item.rooms}</span>
-                {item.floor ? <> • Kat: <span className="font-semibold text-slate-700">{item.floor}</span></> : null}
-                {Number.isFinite(item.age) ? <> • Yaş: <span className="font-semibold text-slate-700">{item.age}</span></> : null}
+              <div className="mt-1 text-sm muted">
+                {item.area ? <span className="font-bold text-slate-700">{item.area}</span> : null} m²
+                {item.rooms ? <span> • <span className="font-bold text-slate-700">{item.rooms}</span></span> : null}
               </div>
             </div>
-          </div>
-
-          <div className="card p-6 mt-4">
-            <h2 className="text-lg font-extrabold">Açıklama</h2>
-            <p className="mt-2 whitespace-pre-line text-slate-700">
-              {item.description}
-            </p>
           </div>
         </div>
 
-        <aside className="lg:col-span-1">
-          <div className="card p-6">
-            <h3 className="text-lg font-extrabold">Hızlı İletişim</h3>
+        <div className="p-6">
+          {/* Gallery */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {(images.length ? images : [null, null, null]).slice(0, 6).map((src, i) => (
+              <button
+                key={i}
+                className="overflow-hidden rounded-2xl border hairline bg-white/70"
+                onClick={() => { if(!src) return; setIdx(i); setOpen(true); }}
+                style={{ aspectRatio: "16/10" }}
+              >
+                {src ? (
+                  <img src={src} alt={item.title} className="w-full h-full object-cover" loading="lazy" width="1200" height="750" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                    <div className="text-center">
+                      <div className="text-2xl">🖼️</div>
+                      <div className="mt-1 text-sm muted">Fotoğraf eklenecek</div>
+                    </div>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
 
-            <div className="mt-3 grid gap-2">
-              <WhatsAppButton phone={item.phone} title={item.title} />
-              {item.phone ? (
-                <a className="btn w-full" href={`tel:${String(item.phone).replace(/\s+/g,"")}`}>
-                  Ara
-                </a>
-              ) : (
-                <div className="text-sm muted">Bu ilana telefon eklenmemiş.</div>
-              )}
+          {/* Details */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <div className="font-extrabold text-slate-900">Açıklama</div>
+              <p className="mt-2 muted whitespace-pre-line">
+                {item.description || "Açıklama eklenecek."}
+              </p>
             </div>
 
-            <div className="mt-5 border-t hairline pt-4">
-              <h4 className="font-extrabold">Özet</h4>
-              <ul className="mt-3 space-y-2 text-slate-700">
-                <li><span className="font-semibold">İlçe:</span> {item.district}</li>
-                {item.neighborhood ? <li><span className="font-semibold">Mahalle:</span> {item.neighborhood}</li> : null}
-                <li><span className="font-semibold">m²:</span> {item.area}</li>
-                <li><span className="font-semibold">Oda:</span> {item.rooms}</li>
-                {item.heating ? <li><span className="font-semibold">Isınma:</span> {item.heating}</li> : null}
-                {item.floor ? <li><span className="font-semibold">Kat:</span> {item.floor}</li> : null}
-                {Number.isFinite(item.age) ? <li><span className="font-semibold">Bina yaşı:</span> {item.age}</li> : null}
-              </ul>
+            <div className="card p-5">
+              <div className="font-extrabold text-slate-900">Özet</div>
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="muted">İlçe</span>
+                  <span className="font-bold text-slate-900">{item.district}</span>
+                </div>
+                {item.neighborhood ? (
+                  <div className="flex justify-between gap-3">
+                    <span className="muted">Mahalle</span>
+                    <span className="font-bold text-slate-900">{item.neighborhood}</span>
+                  </div>
+                ) : null}
+                {item.area ? (
+                  <div className="flex justify-between gap-3">
+                    <span className="muted">m²</span>
+                    <span className="font-bold text-slate-900">{item.area}</span>
+                  </div>
+                ) : null}
+                {item.rooms ? (
+                  <div className="flex justify-between gap-3">
+                    <span className="muted">Oda</span>
+                    <span className="font-bold text-slate-900">{item.rooms}</span>
+                  </div>
+                ) : null}
+                <div className="pt-3">
+                  <a className="btn btn-primary w-full" href="/">
+                    Tüm ilanlara dön
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-        </aside>
-      </section>
+        </div>
 
-      {/* Harita TAM GENİŞLİK */}
-      {mapQ ? (
-        <section className="mt-4 space-y-3">
-          <MapEmbed query={mapQ} />
-
-          <a
-            className="btn btn-primary w-full text-center"
-            target="_blank"
-            rel="noreferrer"
-            href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapQ)}`}
-          >
-            📍 Yol tarifi al
-          </a>
-        </section>
-      ) : null}
-
-      {/* Benzer ilanlar */}
-      {similar.length ? (
-        <section className="mt-8">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-extrabold">Benzer ilanlar</h2>
-            <div className="text-sm muted">{item.district} • {item.type}</div>
+        {/* Modal */}
+        {open ? (
+          <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setOpen(false)}>
+            <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-end mb-3">
+                <button className="btn" onClick={() => setOpen(false)}>Kapat</button>
+              </div>
+              <div className="overflow-hidden rounded-3xl border hairline bg-black">
+                <img
+                  src={images[idx]}
+                  alt={item.title}
+                  className="w-full max-h-[75vh] object-contain bg-black"
+                />
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <button className="btn" onClick={() => setIdx((v) => Math.max(v - 1, 0))}>←</button>
+                <div className="text-white/80 text-sm">{idx + 1} / {images.length}</div>
+                <button className="btn" onClick={() => setIdx((v) => Math.min(v + 1, images.length - 1))}>→</button>
+              </div>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {similar.map((x) => <PropertyCard key={x.id} item={x} />)}
-          </div>
-        </section>
-      ) : null}
-
-      {/* Floating WhatsApp */}
-      <FloatingWhatsApp phone={item.phone} title={item.title} />
+        ) : null}
+      </div>
     </Layout>
   );
 }

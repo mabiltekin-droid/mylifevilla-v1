@@ -26,6 +26,8 @@ export default function PropertyCard({ item }) {
               alt={item.title}
               className="h-48 w-full object-cover"
               loading="lazy"
+              width="1100"
+              height="600"
             />
           ) : (
             <div className="h-48 w-full bg-slate-100 flex items-center justify-center">
