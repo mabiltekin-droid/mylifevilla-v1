@@ -1,6 +1,20 @@
 import Head from "next/head";
+import { useEffect } from "react";
 
 export default function AdminPage(){
+  useEffect(() => {
+    // Decap CMS global: window.CMS
+    const t = setInterval(() => {
+      if (typeof window !== "undefined" && window.CMS) {
+        // Config'i kesin bu path'ten okusun
+        window.CMS.init({ configFile: "/admin/config.yml" });
+        clearInterval(t);
+      }
+    }, 50);
+
+    return () => clearInterval(t);
+  }, []);
+
   return (
     <>
       <Head>
@@ -12,7 +26,7 @@ export default function AdminPage(){
       <div style={{ padding: 24, fontFamily: "system-ui" }}>
         Admin yükleniyor...
         <div style={{ marginTop: 8, opacity: 0.7, fontSize: 13 }}>
-          Eğer boş kalırsa config yolu: <code>/admin/config.yml</code>
+          Config: <code>/admin/config.yml</code>
         </div>
       </div>
     </>
