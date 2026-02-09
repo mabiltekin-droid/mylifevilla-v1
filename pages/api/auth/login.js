@@ -1,9 +1,6 @@
 export default function handler(req, res) {
   const clientId = process.env.GITHUB_CLIENT_ID;
-
-  if (!clientId) {
-    return res.status(500).send("Missing GITHUB_CLIENT_ID env var");
-  }
+  if (!clientId) return res.status(500).send("Missing GITHUB_CLIENT_ID");
 
   const redirectUri = "https://mylifevilla-v1.vercel.app/api/auth/callback";
   const scope = "repo";
