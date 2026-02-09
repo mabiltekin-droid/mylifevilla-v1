@@ -11,9 +11,12 @@
 }
 
 body{
-  background: radial-gradient(1200px 500px at 50% -200px, rgba(15,61,46,.18), transparent 60%),
-              linear-gradient(180deg, #fbfbfa 0%, #f5f6f7 100%);
-  color:#0f172a;
+  /* Logo yeşiline yakın premium arka plan */
+  background:
+    radial-gradient(1000px 420px at 50% -180px, rgba(231,200,115,.18), transparent 60%),
+    radial-gradient(1200px 600px at 20% 0%, rgba(15,61,46,.28), transparent 62%),
+    linear-gradient(180deg, #062018 0%, #0f3d2e 35%, #0b2d22 100%);
+  color:#eaf2ef;
 }
 
 .container-max{
@@ -104,3 +107,6 @@ body{
   0%{ background-position: 200% 0; }
   100%{ background-position: -200% 0; }
 }
+
+/* sayfa içi koyu yazı için */
+.page-text{ color:#0f172a; }

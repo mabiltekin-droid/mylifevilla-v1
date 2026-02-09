@@ -12,9 +12,10 @@ export default function Navbar() {
             />
           </a>
 
-          <a className="btn btn-primary" href="/">
-            İlanlar
-          </a>
+          <div className="flex items-center gap-2">
+            <a className="btn" href="/favorites">Favoriler</a>
+            <a className="btn btn-primary" href="/">İlanlar</a>
+          </div>
         </div>
       </div>
     </header>

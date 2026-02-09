@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { isFav, toggleFav } from "../lib/favorites";
 
 function formatTRY(n){
   const num = Number(n);
@@ -8,6 +10,18 @@ function formatTRY(n){
 
 export default function PropertyCard({ item }) {
   const img = (item.images || []).find(Boolean);
+  const [fav, setFav] = useState(false);
+
+  useEffect(() => {
+    setFav(isFav(item.id));
+  }, [item.id]);
+
+  const onFav = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = toggleFav(item.id);
+    setFav(next.includes(String(item.id)));
+  };
 
   return (
     <Link href={`/listing/${item.id}`} className="block">
@@ -19,6 +33,15 @@ export default function PropertyCard({ item }) {
             </span>
             {item.featured ? <span className="badge badge-gold">Öne Çıkan</span> : null}
           </div>
+
+          <button
+            onClick={onFav}
+            aria-label="Favori"
+            className="absolute right-4 top-4 z-10 btn"
+            style={{ padding: "8px 10px" }}
+          >
+            {fav ? "❤️" : "🤍"}
+          </button>
 
           {img ? (
             <img
@@ -42,7 +65,7 @@ export default function PropertyCard({ item }) {
                style={{background:"linear-gradient(180deg, transparent, rgba(0,0,0,.10))"}} />
         </div>
 
-        <div className="p-5">
+        <div className="p-5 page-text">
           <div className="font-extrabold tracking-tight text-slate-900 line-clamp-2">
             {item.title}
           </div>
